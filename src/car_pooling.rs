@@ -1,4 +1,4 @@
-struct Solution;
+pub struct Solution;
 
 use std::ops::Bound::Included;
 use std::{
@@ -24,12 +24,10 @@ impl Solution {
 pub struct Car {
     max_capacity: u16,
     current_capacity: u16,
-    /// All trips this car has encountered, whether or not they are completed
-    trips: Vec<Trip>,
     /// The current location of the car
     location: u16,
-    /// The currently active trips keyed by destination with indices into the `trips` vector
-    active_trips: BTreeMap<u16, Vec<usize>>,
+    /// The currently active trips keyed by destination
+    active_trips: BTreeMap<u16, Vec<Trip>>,
 }
 
 impl Car {
@@ -39,23 +37,22 @@ impl Car {
         // find all the active trips that must have been completed prior to starting this one
         let passed_locations = self
             .active_trips
-            .range((Included(&0), Included(&next_location)))
+            .range((Included(&self.location), Included(&next_location)))
             .map(|(dropoff_location, _ending_trips)| *dropoff_location)
             .collect::<Vec<u16>>();
         for passed_location in passed_locations {
-            let trip_indices = self.active_trips.get(&passed_location).unwrap().clone();
-            for trip_index in trip_indices {
-                let ending_trip = &self.trips[trip_index];
-                self.current_capacity -= ending_trip.num_passengers as u16;
-            }
+            let passengers_dropped_off: u16 = self
+                .active_trips
+                .get(&passed_location)
+                .unwrap()
+                .iter()
+                .map(|ending_trip| ending_trip.num_passengers as u16)
+                .sum();
+            self.current_capacity -= passengers_dropped_off;
             self.active_trips.remove(&passed_location);
         }
         self.current_capacity += trip.num_passengers as u16;
-        self.trips.push(trip);
-        self.active_trips
-            .entry(trip.to)
-            .or_default()
-            .push(self.trips.len() - 1);
+        self.active_trips.entry(trip.to).or_default().push(trip);
         self.location = next_location;
     }
 
@@ -69,7 +66,6 @@ impl From<i32> for Car {
         Self {
             max_capacity: capacity as u16,
             current_capacity: 0,
-            trips: vec![],
             location: 0,
             active_trips: BTreeMap::default(),
         }
