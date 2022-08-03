@@ -642,14 +642,10 @@ impl Simulation {
     }
 
     pub fn run(&mut self) -> Grid {
-        let debug = false;
+        let debug = true;
         let possible_cell_values = if self.max_extroverts == 0 && self.max_introverts == 0 {
             1usize
-        } else if (self.max_extroverts as usize == self.rows * self.columns
-            && self.max_introverts == 0)
-            || (self.max_introverts as usize == self.rows * self.columns
-                && self.max_extroverts == 0)
-        {
+        } else if self.max_introverts == 0 || self.max_extroverts == 0 {
             2
         } else {
             3
@@ -673,13 +669,13 @@ impl Simulation {
                 fittest = challenger;
             }
 
-            // stopping condition: median has stabilised
-            let median_challenger = self.percentile(stopping_percentile);
-            match median_challenger.happiness.cmp(&population_fitness) {
+            // stopping condition: population has stabilised
+            let population_challenger = self.percentile(stopping_percentile);
+            match population_challenger.happiness.cmp(&population_fitness) {
                 std::cmp::Ordering::Less => population_fitness_age = 0,
                 std::cmp::Ordering::Equal => population_fitness_age += 1,
                 std::cmp::Ordering::Greater => {
-                    population_fitness = median_challenger.happiness;
+                    population_fitness = population_challenger.happiness;
                     population_fitness_age = 0;
                 }
             }
@@ -707,10 +703,11 @@ impl Simulation {
         let mut max_copies = 0;
         let mut parent_indices = Vec::new();
         fn compress(happiness: i32) -> usize {
-            // let copies = happiness.log(2.7182818284590452353602874713527) as usize;
-            // let copies = happiness.log(1.618033988749) as usize;
-            // (happiness as f64).log(1.05) as usize
+            // happiness.log(2.7182818284590452353602874713527) as usize
+            // happiness.log(1.618033988749) as usize
+            // happiness.log(1.05) as usize
             (happiness as f64).sqrt().round() as usize
+            // happiness as usize
         }
         for i in 0..self.population.len() {
             // TODO there is a more computationally efficient way to do weighted random selection
