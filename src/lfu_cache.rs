@@ -2,7 +2,7 @@
 
 use std::{
     cell::RefCell,
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeSet, HashMap},
     rc::Rc,
 };
 
@@ -171,7 +171,8 @@ pub struct LFUCache {
     map: HashMap<Key, Node>,
     /// An index of usage counts to all the entries that match that count --
     /// The value groups Nodes found in `map`.
-    keys_by_count: BTreeMap<u32, UsageCountBucket>,
+    keys_by_count: HashMap<u32, UsageCountBucket>,
+    usage_counts: BTreeSet<u32>,
 }
 
 /**
@@ -183,7 +184,8 @@ impl LFUCache {
         Self {
             capacity: capacity as u16,
             map: HashMap::default(),
-            keys_by_count: BTreeMap::default(),
+            keys_by_count: HashMap::default(),
+            usage_counts: BTreeSet::default(),
         }
     }
 
@@ -198,10 +200,12 @@ impl LFUCache {
             old_bucket.remove(Rc::clone(result));
             if old_bucket.length == 0 {
                 self.keys_by_count.remove(&(old_usage_count as u32));
+                self.usage_counts.remove(&(old_usage_count as u32));
             }
 
             let new_usage_count = old_usage_count + 1;
             result.borrow_mut().usage_count = new_usage_count;
+            self.usage_counts.insert(new_usage_count as u32);
 
             let new_bucket = self
                 .keys_by_count
@@ -225,9 +229,11 @@ impl LFUCache {
         if !self.map.contains_key(&key) && self.map.len() >= self.capacity as usize {
             // need to evict the least-frequently-used item
             let mut count_to_remove: Option<u32> = None;
-            if let Some((min_count, least_frequently_used_keys)) =
-                self.keys_by_count.iter_mut().next()
-            {
+            if let Some(min_count) = self.usage_counts.iter().next() {
+                let least_frequently_used_keys = self
+                    .keys_by_count
+                    .get_mut(min_count)
+                    .expect("Bucket missing for minimum usage count");
                 if let Some(entry) = least_frequently_used_keys.pop_least_recently_used() {
                     key_to_remove = Some(entry.key);
                 }
@@ -237,6 +243,7 @@ impl LFUCache {
             }
             if let Some(count_to_remove) = count_to_remove {
                 self.keys_by_count.remove(&count_to_remove);
+                self.usage_counts.remove(&count_to_remove);
             }
         }
         if let Some(key_to_remove) = key_to_remove {
@@ -258,9 +265,11 @@ impl LFUCache {
             }
             if let Some(count_to_remove) = count_to_remove {
                 self.keys_by_count.remove(&(count_to_remove as u32));
+                self.usage_counts.remove(&(count_to_remove as u32));
             }
 
             let new_usage_count = old_usage_count + 1;
+            self.usage_counts.insert(new_usage_count as u32);
             entry.borrow_mut().usage_count = new_usage_count;
 
             let new_bucket = self
@@ -276,6 +285,7 @@ impl LFUCache {
                 .entry(entry.as_ref().borrow().usage_count as u32)
                 .or_default();
             new_bucket.push_most_recent(entry);
+            self.usage_counts.insert(1);
         }
     }
 }
