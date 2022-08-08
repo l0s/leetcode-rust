@@ -601,17 +601,15 @@ pub struct Simulation {
 
 impl Display for Simulation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut buffer = String::new();
-        buffer.push_str("p1\tp25\tp50\tp75\tp99\n");
-        buffer.push_str(&format!(
-            "{}\t{}\t{}\t{}\t{}",
+        write!(
+            f,
+            "p1\tp25\tp50\tp75\tp99\n{}\t{}\t{}\t{}\t{}",
             self.population[(0.01 * self.population.len() as f64) as usize].happiness,
             self.population[(0.25 * self.population.len() as f64) as usize].happiness,
             self.population[(0.50 * self.population.len() as f64) as usize].happiness,
             self.population[(0.75 * self.population.len() as f64) as usize].happiness,
             self.population[(0.99 * self.population.len() as f64) as usize].happiness
-        ));
-        write!(f, "{}", buffer)
+        )
     }
 }
 
