@@ -5,38 +5,47 @@ From: https://leetcode.com/problems/distinct-subsequences-ii/
 
 pub struct Solution;
 
-use std::collections::{HashMap, HashSet};
 const C: usize = 10usize.pow(9) + 7;
 
 impl Solution {
     pub fn distinct_subseq_ii(s: String) -> i32 {
-        let mut cache = HashMap::default();
-        let result = distinct_subsequences(&s, &mut cache);
-        (result.len() % C) as i32
+        // 1 <= s.length <= 2000
+        // s consists of lowercase English letters.
+        // index is the character offset from 'a', the value is the last index in `s` in which it appears
+        // a value greater than the length of `s` means the character hasn't appeared yet
+        let mut character_last_index = vec![usize::MAX; 26usize];
+        // index is the length of the subsequence
+        // value is the number of distinct subsequences
+        let mut subsequences_of_length = vec![usize::MAX; s.len() + 1];
+        subsequences_of_length[0] = 1;
+
+        for (i, c) in s.chars().enumerate() {
+            // the most possible distinct subsequences that end with this character
+            let max_distinct_subsequences = multiply(2, subsequences_of_length[i]);
+            let character_index = c as usize - 'a' as usize;
+            let last_index = character_last_index[character_index];
+            subsequences_of_length[i + 1] = if (last_index as usize) < s.len() {
+                // character appeared before
+                // don't double-count previous distinct subsequences
+                subtract(
+                    max_distinct_subsequences,
+                    subsequences_of_length[last_index] as usize,
+                )
+            } else {
+                max_distinct_subsequences
+            };
+            character_last_index[character_index] = i;
+        }
+        (subsequences_of_length[s.len()] - 1) as i32
     }
 }
 
-fn distinct_subsequences(
-    sequence: &str,
-    cache: &mut HashMap<String, HashSet<String>>,
-) -> HashSet<String> {
-    if sequence.is_empty() {
-        return HashSet::default();
-    } else if let Some(cached_result) = cache.get(sequence) {
-        return cached_result.clone();
-    }
-    let mut set = HashSet::default();
-    for index_to_delete in 0..sequence.len() {
-        let prefix = &sequence[0..index_to_delete];
-        let suffix = &sequence[(index_to_delete + 1)..sequence.len()];
-        let subsequence = [prefix, suffix].concat();
-        for subsequence in distinct_subsequences(&subsequence, cache) {
-            set.insert(subsequence);
-        }
-    }
-    set.insert(sequence.to_owned());
-    cache.insert(sequence.to_owned(), set.clone());
-    set
+fn multiply(x: usize, y: usize) -> usize {
+    ((x % C) * (y % C)) % C
+}
+
+fn subtract(x: usize, y: usize) -> usize {
+    (C + (x % C) - (y % C)) % C
 }
 
 #[cfg(test)]
@@ -89,5 +98,29 @@ mod tests {
 
         // then
         assert_eq!(result, 983);
+    }
+
+    #[test]
+    fn example50() {
+        // given
+        let s = "pcrdhwdxmqdznbenhwjsenjhvulyve";
+
+        // when
+        let result = Solution::distinct_subseq_ii(s.to_owned());
+
+        // then
+        assert_eq!(result, 836817663);
+    }
+
+    #[test]
+    fn example60() {
+        // given
+        let s = "zchmliaqdgvwncfatcfivphddpzjkgyygueikthqzyeeiebczqbqhdytkoawkehkbizdmcnilcjjlpoeoqqoqpswtqdpvszfaksn";
+
+        // when
+        let result = Solution::distinct_subseq_ii(s.to_owned());
+
+        // then
+        assert_eq!(result, 97915677);
     }
 }
