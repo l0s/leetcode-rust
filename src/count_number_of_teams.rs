@@ -13,8 +13,7 @@ impl Solution {
                 #[allow(clippy::needless_range_loop)]
                 for k in (j + 1)..rating.len() {
                     let third = rating[k];
-                    if (first < second && second < third) || (first > second && second > third)
-                    {
+                    if (first < second && second < third) || (first > second && second > third) {
                         result += 1;
                     }
                 }
