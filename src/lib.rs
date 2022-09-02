@@ -1,3 +1,4 @@
+pub mod average_of_levels_in_binary_tree;
 pub mod car_pooling;
 pub mod count_number_of_teams;
 pub mod distinct_subsequences_ii;
