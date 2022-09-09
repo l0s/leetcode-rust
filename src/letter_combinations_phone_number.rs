@@ -3,52 +3,54 @@
 
 pub struct Solution;
 
-use std::collections::HashMap;
+const NUMBER_LETTERS: &[&[char]; 8] = &[
+    &['a', 'b', 'c'],
+    &['d', 'e', 'f'],
+    &['g', 'h', 'i'],
+    &['j', 'k', 'l'],
+    &['m', 'n', 'o'],
+    &['p', 'q', 'r', 's'],
+    &['t', 'u', 'v'],
+    &['w', 'x', 'y', 'z'],
+];
 
 impl Solution {
     pub fn letter_combinations(digits: String) -> Vec<String> {
-        // TODO can use an array
-        let number_letters: HashMap<char, Vec<char>> = HashMap::from([
-            ('2', vec!['a', 'b', 'c']),
-            ('3', vec!['d', 'e', 'f']),
-            ('4', vec!['g', 'h', 'i']),
-            ('5', vec!['j', 'k', 'l']),
-            ('6', vec!['m', 'n', 'o']),
-            ('7', vec!['p', 'q', 'r', 's']),
-            ('8', vec!['t', 'u', 'v']),
-            ('9', vec!['w', 'x', 'y', 'z']),
-        ]);
-
         let digits_vec: Vec<char> = digits.chars().collect();
-        combinations(&digits_vec, &number_letters)
+        combinations(&digits_vec)
             .iter()
             .map(|v| v.iter().cloned().collect())
             .collect()
     }
 }
 
-fn combinations(digits: &[char], number_letters: &HashMap<char, Vec<char>>) -> Vec<Vec<char>> {
+fn combinations(digits: &[char]) -> Vec<Vec<char>> {
     if digits.is_empty() {
         return vec![];
     }
     let first = digits[0];
     let remaining = &digits[1..];
 
-    let prefixes = number_letters.get(&first).expect(&format!("Unmapped key: {}", first));
-    let suffixes = combinations(remaining, number_letters);
+    let prefixes = NUMBER_LETTERS[index(first)];
+    let suffixes = combinations(remaining);
     if suffixes.is_empty() {
-        return prefixes.iter().map(|prefix| vec![*prefix]).collect()
+        return prefixes.iter().map(|prefix| vec![*prefix]).collect();
     }
 
-    let mut result = vec![];
+    let mut result = Vec::with_capacity(prefixes.len() * suffixes.len());
     for prefix in prefixes {
         for suffix in &suffixes {
-            let partial = vec![vec![*prefix], suffix.clone()].concat();
-            result.push(partial);
+            result.push(vec![vec![*prefix], suffix.clone()].concat());
         }
     }
 
     result
+}
+
+fn index(c: char) -> usize {
+    c.to_digit(10)
+        .unwrap_or_else(|| panic!("Unmapped key: {}", c)) as usize
+        - 2
 }
 
 #[cfg(test)]
