@@ -6,6 +6,7 @@ pub mod find_minimum_time_to_finish_all_jobs;
 pub mod letter_combinations_phone_number;
 pub mod lfu_cache;
 pub mod maximize_grid_happiness;
+pub mod partition_array_into_disjoint_intervals;
 pub mod reveal_cards_in_increasing_order;
 pub mod search_in_rotated_sorted_array;
 pub mod time_based_key_value_store;
