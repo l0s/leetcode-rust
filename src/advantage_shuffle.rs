@@ -3,157 +3,60 @@
 
 pub struct Solution;
 
-use std::collections::hash_map::DefaultHasher;
-use std::collections::{BinaryHeap, HashMap};
-use std::hash::Hasher;
+use std::collections::BTreeMap;
 
 impl Solution {
     pub fn advantage_count(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-        best_permutation(
-            &nums1,
-            &nums2,
-            advantage(&nums1, &nums2),
-            &mut HashMap::default(),
-        )
-        .permutation
-    }
-}
-
-#[derive(PartialEq, Eq, Clone)]
-struct Permutation {
-    permutation: Vec<i32>,
-    advantage: usize,
-}
-
-impl Ord for Permutation {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.advantage.cmp(&other.advantage)
-    }
-}
-
-impl PartialOrd for Permutation {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.advantage.partial_cmp(&other.advantage)
-    }
-}
-
-/// Find _one of_ the permutations that will yield that highest advantage
-/// Parameters
-/// - `numbers_to_permute` - The numbers which may be reördered to increase advantage
-/// - `reference` - The numbers to which any potential permutation will be compared to determine advantage
-/// - `minimum_advantage` - The highest known possible advantage for `reference`. Any lower advantage can be disregarded.
-/// - `cache` - a mapping of `hash(numbers_to_permuate, reference)` to the best known permutation
-fn best_permutation(
-    numbers_to_permute: &[i32],
-    reference: &[i32],
-    minimum_advantage: usize,
-    cache: &mut HashMap<u64, Permutation>,
-) -> Permutation {
-    if numbers_to_permute.is_empty() {
-        return Permutation {
-            permutation: vec![],
-            advantage: 0,
-        };
-    } else if numbers_to_permute.len() == 1 {
-        return Permutation {
-            permutation: vec![numbers_to_permute[0]],
-            advantage: if numbers_to_permute[0] > reference[0] {
-                1
-            } else {
-                0
-            },
-        };
-    } else if numbers_to_permute
-        .iter()
-        .max()
-        .expect("Non empty slice should have a maximum value")
-        < reference
-            .iter()
-            .min()
-            .expect("Non empty slice should have a minimum value")
-    {
-        // all possible permutations have a zero advantage
-        return Permutation {
-            permutation: numbers_to_permute.to_vec(),
-            advantage: 0,
-        };
-    }
-    let starting_advantage = advantage(numbers_to_permute, reference);
-    if starting_advantage == numbers_to_permute.len()
-        || numbers_to_permute.len() < minimum_advantage
-    {
-        // this is one of the permutations with the highest possible advantage
-        // or
-        // no permutation will be advantageous enough
-        // just return the starting permutation
-        return Permutation {
-            permutation: numbers_to_permute.to_vec(),
-            advantage: starting_advantage,
-        };
-    }
-
-    let cache_key = create_cache_key(numbers_to_permute, reference);
-    if let Some(cached) = cache.get(&cache_key) {
-        return cached.clone();
-    }
-
-    let reference_remaining = &reference[1..];
-    let mut heap: BinaryHeap<Permutation> = BinaryHeap::default();
-    for i in 0..numbers_to_permute.len() {
-        let first = numbers_to_permute[i];
-        let advantage_modifier = if first > reference[0] { 1 } else { 0 };
-        let mut minimum_advantage = if let Some(best) = heap.peek() {
-            minimum_advantage.max(best.advantage)
-        } else {
-            minimum_advantage
-        };
-        if minimum_advantage > 0 {
-            // if the chosen first entry is advantageous
-            // we can lower the bar by one
-            minimum_advantage -= advantage_modifier;
+        let mut reference_map: BTreeMap<i32, Vec<usize>> = BTreeMap::default();
+        for (index, value) in nums2.iter().enumerate() {
+            // O( n )
+            reference_map.entry(*value).or_default().push(index);
         }
-        let remaining = [&numbers_to_permute[..i], &numbers_to_permute[(i + 1)..]].concat();
-        let sub_permutation =
-            best_permutation(&remaining, reference_remaining, minimum_advantage, cache);
-        let permutation = vec![vec![first], sub_permutation.permutation].concat();
-        heap.push(Permutation {
-            permutation,
-            advantage: sub_permutation.advantage + advantage_modifier,
-        });
-    }
-
-    let result = heap.pop().expect("No permutations");
-    cache.insert(cache_key, result.clone());
-    result
-}
-
-fn advantage(nums1: &[i32], nums2: &[i32]) -> usize {
-    let mut result = 0;
-    for i in 0..nums1.len() {
-        if nums1[i] > nums2[i] {
-            result += 1;
+        let mut numbers_to_permute = nums1;
+        numbers_to_permute.sort(); // O( n lg n )
+        let mut result = vec![0; nums2.len()];
+        for (value, indices) in reference_map.iter() {
+            // O( n ) for both loops together
+            for index in indices {
+                // Find a number that is just barely larger
+                let index_to_use = match numbers_to_permute.binary_search(&(value + 1)) {
+                    // O( lg n )
+                    Ok(index) => {
+                        // best case scenario, this is exactly one more than the reference number
+                        index
+                    }
+                    Err(index) => {
+                        if index >= numbers_to_permute.len() {
+                            // no larger number found, just use the smallest available
+                            0
+                        } else {
+                            // this is the smallest value larger than the reference
+                            index
+                        }
+                    }
+                };
+                result[*index] = numbers_to_permute[index_to_use];
+                numbers_to_permute.remove(index_to_use);
+            }
         }
-    }
-    result
-}
 
-fn create_cache_key(numbers_to_permute: &[i32], reference: &[i32]) -> u64 {
-    let mut hasher = DefaultHasher::default();
-    hasher.write_usize(numbers_to_permute.len());
-    for number_to_permute in numbers_to_permute {
-        hasher.write_i32(*number_to_permute);
+        result
     }
-    for reference_number in reference {
-        hasher.write_i32(*reference_number);
-    }
-    hasher.finish()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::advantage_shuffle::advantage;
-
     use super::Solution;
+
+    fn advantage(nums1: &[i32], nums2: &[i32]) -> usize {
+        let mut result = 0;
+        for i in 0..nums1.len() {
+            if nums1[i] > nums2[i] {
+                result += 1;
+            }
+        }
+        result
+    }
 
     #[test]
     pub fn example1() {
@@ -266,7 +169,7 @@ mod tests {
         );
     }
 
-    // #[test] // FIXME this test case is currently broken
+    #[test]
     pub fn example30() {
         // given
         let nums1 = vec![25, 9, 17, 6, 2, 14, 3, 24, 18, 15, 10, 27, 11, 4, 13];
