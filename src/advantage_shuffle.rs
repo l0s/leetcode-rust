@@ -7,7 +7,7 @@ use std::collections::BinaryHeap;
 
 impl Solution {
     pub fn advantage_count(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-        best_permutation(&nums1, &nums2).permutation
+        best_permutation(&nums1, &nums2, advantage(&nums1, &nums2)).permutation
     }
 }
 
@@ -29,7 +29,11 @@ impl PartialOrd for Permutation {
     }
 }
 
-fn best_permutation(numbers_to_permute: &[i32], reference: &[i32]) -> Permutation {
+fn best_permutation(
+    numbers_to_permute: &[i32],
+    reference: &[i32],
+    minimum_advantage: usize,
+) -> Permutation {
     if numbers_to_permute.is_empty() {
         return Permutation {
             permutation: vec![],
@@ -58,8 +62,11 @@ fn best_permutation(numbers_to_permute: &[i32], reference: &[i32]) -> Permutatio
             .iter()
             .min()
             .expect("Non empty slice should have a minimum value")
+        || numbers_to_permute.len() < minimum_advantage
     {
         // all possible permutations have a zero advantage
+        // or
+        // maximum possible advantage won't be advantageous enough (advantage not really 0, but we won't consider it)
         return Permutation {
             permutation: numbers_to_permute.to_vec(),
             advantage: 0,
@@ -67,12 +74,21 @@ fn best_permutation(numbers_to_permute: &[i32], reference: &[i32]) -> Permutatio
     }
 
     let reference_remaining = &reference[1..];
-    let mut heap = BinaryHeap::default();
+    let mut heap: BinaryHeap<Permutation> = BinaryHeap::default();
     for i in 0..numbers_to_permute.len() {
         let first = numbers_to_permute[i];
         let advantage_modifier = if first > reference[0] { 1 } else { 0 };
+        // let minimum_advantage = minimum_advantage - advantage_modifier;
+        let mut minimum_advantage = if minimum_advantage > 0 {
+            minimum_advantage - advantage_modifier
+        } else {
+            minimum_advantage
+        };
+        if let Some(best) = heap.peek() {
+            minimum_advantage = minimum_advantage.max(best.advantage);
+        }
         let remaining = [&numbers_to_permute[..i], &numbers_to_permute[(i + 1)..]].concat();
-        let sub_permutation = best_permutation(&remaining, reference_remaining);
+        let sub_permutation = best_permutation(&remaining, reference_remaining, minimum_advantage);
         let permutation = vec![vec![first], sub_permutation.permutation].concat();
         heap.push(Permutation {
             permutation,
