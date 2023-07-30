@@ -11,3 +11,5 @@ pub mod partition_array_into_disjoint_intervals;
 pub mod reveal_cards_in_increasing_order;
 pub mod search_in_rotated_sorted_array;
 pub mod time_based_key_value_store;
+pub mod buddy_strings;
+pub mod stone_game_vii;

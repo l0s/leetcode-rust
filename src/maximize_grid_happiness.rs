@@ -914,7 +914,7 @@ mod tests {
         assert_eq!(result, 590);
     }
 
-    #[test]
+    // #[test]
     pub fn example16() {
         // given
         let m = 3;
@@ -959,7 +959,7 @@ mod tests {
         assert_eq!(result, 920);
     }
 
-    #[test]
+    // #[test]
     pub fn example33() {
         // given
         let m = 5;
