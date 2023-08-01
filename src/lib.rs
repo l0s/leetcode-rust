@@ -13,3 +13,4 @@ pub mod search_in_rotated_sorted_array;
 pub mod time_based_key_value_store;
 pub mod buddy_strings;
 pub mod stone_game_vii;
+pub mod largest_element_after_merge_operations;
