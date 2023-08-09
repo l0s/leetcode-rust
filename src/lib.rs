@@ -14,3 +14,6 @@ pub mod time_based_key_value_store;
 pub mod buddy_strings;
 pub mod stone_game_vii;
 pub mod largest_element_after_merge_operations;
+pub mod best_time_to_buy_and_sell_stock;
+pub mod two_sum_ii;
+pub mod sliding_window_maximum;
