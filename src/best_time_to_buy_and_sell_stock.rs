@@ -8,9 +8,8 @@ impl Solution {
         let mut result = 0i32;
 
         let mut best_purchase_price = prices[0];
-        for day in 1..prices.len() {
-            let market_price = prices[day];
-            best_purchase_price = best_purchase_price.min(market_price);
+        for market_price in prices.iter().skip(1) {
+            best_purchase_price = best_purchase_price.min(*market_price);
             let potential_profit = market_price - best_purchase_price;
             result = result.max(potential_profit);
         }

@@ -24,12 +24,12 @@ impl Solution {
             let max_distinct_subsequences = multiply(2, subsequences_of_length[i]);
             let character_index = c as usize - 'a' as usize;
             let last_index = character_last_index[character_index];
-            subsequences_of_length[i + 1] = if (last_index as usize) < s.len() {
+            subsequences_of_length[i + 1] = if (last_index) < s.len() {
                 // character appeared before
                 // don't double-count previous distinct subsequences
                 subtract(
                     max_distinct_subsequences,
-                    subsequences_of_length[last_index] as usize,
+                    subsequences_of_length[last_index],
                 )
             } else {
                 max_distinct_subsequences

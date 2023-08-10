@@ -844,8 +844,8 @@ impl Rand {
     }
 
     pub fn rand_range(&mut self, a: usize, b: usize) -> usize {
-        let m = (b - a + 1) as usize;
-        a + (self.rand() as usize % m) as usize
+        let m = b - a + 1;
+        a + (self.rand() as usize % m)
     }
 }
 
@@ -914,7 +914,8 @@ mod tests {
         assert_eq!(result, 590);
     }
 
-    // #[test]
+    #[test]
+    #[ignore]
     pub fn example16() {
         // given
         let m = 3;
@@ -959,7 +960,8 @@ mod tests {
         assert_eq!(result, 920);
     }
 
-    // #[test]
+    #[test]
+    #[ignore]
     pub fn example33() {
         // given
         let m = 5;
