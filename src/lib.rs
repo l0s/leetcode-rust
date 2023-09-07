@@ -19,3 +19,4 @@ pub mod two_sum_ii;
 pub mod sliding_window_maximum;
 pub mod first_last_position_of_element;
 pub mod balanced_binary_tree;
+pub mod partition_equal_subset_sum;
