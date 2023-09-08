@@ -20,3 +20,4 @@ pub mod sliding_window_maximum;
 pub mod first_last_position_of_element;
 pub mod balanced_binary_tree;
 pub mod partition_equal_subset_sum;
+pub mod sort_colors;
