@@ -22,3 +22,4 @@ pub mod balanced_binary_tree;
 pub mod partition_equal_subset_sum;
 pub mod sort_colors;
 pub mod pascals_triangle;
+pub mod max_depth_of_binary_tree;
