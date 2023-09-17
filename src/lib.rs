@@ -23,3 +23,5 @@ pub mod partition_equal_subset_sum;
 pub mod sort_colors;
 pub mod pascals_triangle;
 pub mod max_depth_of_binary_tree;
+pub mod median_of_two_sorted_arrays;
+pub mod determine_if_cell_is_reachable_at_time;

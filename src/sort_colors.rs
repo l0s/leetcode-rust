@@ -8,8 +8,8 @@ impl Solution {
         let mut reds = 0usize;
         let mut whites = 0usize;
         let mut blues = 0usize;
-        for num in &mut *nums {
-            let target = match num {
+        for color in &mut *nums {
+            let target = match color {
                 0 => &mut reds,
                 1 => &mut whites,
                 2 => &mut blues,
@@ -17,14 +17,14 @@ impl Solution {
             };
             *target += 1;
         }
-        for i in 0..reds {
-            nums[i] = 0;
+        for color in nums.iter_mut().take(reds) {
+            *color = 0;
         }
-        for i in reds..(reds + whites) {
-            nums[i] = 1;
+        for color in nums.iter_mut().skip(reds).take(whites) {
+            *color = 1;
         }
-        for i in (reds + whites)..(reds + whites + blues)  {
-            nums[i] = 2;
+        for color in nums.iter_mut().skip(reds + whites).take(blues)  {
+            *color = 2;
         }
     }
 }
