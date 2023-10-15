@@ -26,3 +26,4 @@ pub mod max_depth_of_binary_tree;
 pub mod median_of_two_sorted_arrays;
 pub mod determine_if_cell_is_reachable_at_time;
 pub mod beautiful_numbers_in_range;
+pub mod min_len_after_pair_removals;
