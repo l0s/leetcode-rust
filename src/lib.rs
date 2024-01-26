@@ -28,3 +28,4 @@ pub mod determine_if_cell_is_reachable_at_time;
 pub mod beautiful_numbers_in_range;
 pub mod min_len_after_pair_removals;
 pub mod min_sum_k_avoiding_array;
+pub mod merge_strings_alternately;
