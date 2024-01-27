@@ -29,3 +29,4 @@ pub mod beautiful_numbers_in_range;
 pub mod min_len_after_pair_removals;
 pub mod min_sum_k_avoiding_array;
 pub mod merge_strings_alternately;
+pub mod greatest_common_divisor_of_strings;
