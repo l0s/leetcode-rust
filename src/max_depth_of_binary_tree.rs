@@ -27,7 +27,8 @@ impl TreeNode {
         if len == 0 {
             return None;
         }
-        let mut owned_nodes = array.iter()
+        let mut owned_nodes = array
+            .iter()
             .map(|value| value.map(|value| Rc::new(RefCell::new(TreeNode::new(value)))))
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         let mut has_left_child = Vec::with_capacity(len / 2);
@@ -51,10 +52,9 @@ impl TreeNode {
 
         for parent_index in has_left_child {
             let child_index = parent_index * 2 + 1;
-            let child = owned_nodes.get(child_index)
-                .unwrap()
-                .clone();
-            let mut parent = owned_nodes.get_mut(parent_index)
+            let child = owned_nodes.get(child_index).unwrap().clone();
+            let mut parent = owned_nodes
+                .get_mut(parent_index)
                 .unwrap()
                 .as_mut()
                 .unwrap()
@@ -63,10 +63,9 @@ impl TreeNode {
         }
         for parent_index in has_right_child {
             let child_index = parent_index * 2 + 2;
-            let child = owned_nodes.get(child_index)
-                .unwrap()
-                .clone();
-            let mut parent = owned_nodes.get_mut(parent_index)
+            let child = owned_nodes.get(child_index).unwrap().clone();
+            let mut parent = owned_nodes
+                .get_mut(parent_index)
                 .unwrap()
                 .as_mut()
                 .unwrap()

@@ -13,7 +13,9 @@ impl Solution {
         let mut largest_item_indices = VecDeque::with_capacity(k);
         for (index, item) in nums.iter().take(k).enumerate() {
             // remove all items smaller than the newest one
-            while !largest_item_indices.is_empty() && *item > nums[*largest_item_indices.back().unwrap()] {
+            while !largest_item_indices.is_empty()
+                && *item > nums[*largest_item_indices.back().unwrap()]
+            {
                 largest_item_indices.pop_back();
             }
             largest_item_indices.push_back(index);
@@ -23,7 +25,9 @@ impl Solution {
         for index in k..nums.len() {
             let item = nums[index];
             // remove all items smaller than the new item in the window
-            while !largest_item_indices.is_empty() && item > nums[*largest_item_indices.back().unwrap()] {
+            while !largest_item_indices.is_empty()
+                && item > nums[*largest_item_indices.back().unwrap()]
+            {
                 largest_item_indices.pop_back();
             }
             largest_item_indices.push_back(index);
@@ -79,6 +83,6 @@ mod tests {
         let result = Solution::max_sliding_window(nums, k);
 
         // then
-        assert_eq!(result, vec![10, 10 , 9, 2]);
+        assert_eq!(result, vec![10, 10, 9, 2]);
     }
 }

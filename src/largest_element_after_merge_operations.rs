@@ -5,9 +5,7 @@ pub struct Solution;
 
 impl Solution {
     pub fn max_array_value(nums: Vec<i32>) -> i64 {
-        max(nums.iter()
-                        .map(|small| *small as u64)
-                        .collect()) as i64
+        max(nums.iter().map(|small| *small as u64).collect()) as i64
     }
 }
 
@@ -66,7 +64,10 @@ mod tests {
     #[test]
     pub fn example49() {
         // given
-        let nums = vec![68, 86, 34, 99, 4, 6, 24, 88, 26, 83, 2, 33, 37, 79, 30, 60, 56, 44, 53, 4, 86, 60, 13, 81, 95, 28, 83, 24];
+        let nums = vec![
+            68, 86, 34, 99, 4, 6, 24, 88, 26, 83, 2, 33, 37, 79, 30, 60, 56, 44, 53, 4, 86, 60, 13,
+            81, 95, 28, 83, 24,
+        ];
 
         // when
         let result = Solution::max_array_value(nums);

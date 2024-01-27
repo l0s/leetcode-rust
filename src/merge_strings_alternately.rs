@@ -13,17 +13,17 @@ impl Solution {
                 (Some(c1), Some(c2)) => {
                     result.push(c1);
                     result.push(c2);
-                },
+                }
                 (Some(c1), None) => {
                     result.push(c1);
                     result.extend(word1);
                     break;
-                },
+                }
                 (None, Some(c2)) => {
                     result.push(c2);
                     result.extend(word2);
                     break;
-                },
+                }
                 (None, None) => break,
             }
         }

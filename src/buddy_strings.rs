@@ -21,8 +21,8 @@ impl Solution {
         // strip common suffix
         for i in (0..s.len()).rev() {
             if s[i] != goal[i] {
-                s = &s[0..(i+1)];
-                goal = &goal[0..(i+1)];
+                s = &s[0..(i + 1)];
+                goal = &goal[0..(i + 1)];
                 break;
             }
         }
@@ -35,7 +35,8 @@ impl Solution {
                     &s[(i + 1)..j],
                     &[*c],
                     &s[(j + 1)..s.len()],
-                ].concat();
+                ]
+                .concat();
                 if modified.eq(&goal) {
                     return true;
                 }

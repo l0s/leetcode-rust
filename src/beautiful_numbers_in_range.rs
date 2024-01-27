@@ -8,25 +8,13 @@ impl Solution {
         let low = low - 1;
 
         let mut solver = Solver::from(k as usize);
-        let upper_count = solver.beautiful_numbers(&extract_digits(high),
-                                                   0,
-                                                   0,
-                                                   true,
-                                                   0,
-                                                   true,
-                                                   0);
+        let upper_count = solver.beautiful_numbers(&extract_digits(high), 0, 0, true, 0, true, 0);
 
         let lower_count = if low == 0 {
             1
         } else {
             let mut solver = Solver::from(k as usize);
-            solver.beautiful_numbers(&extract_digits(low),
-                                     0,
-                                     0,
-                                     true,
-                                     0,
-                                     true,
-                                     0)
+            solver.beautiful_numbers(&extract_digits(low), 0, 0, true, 0, true, 0)
         };
 
         (upper_count - lower_count) as i32
@@ -53,10 +41,7 @@ impl From<usize> for Solver {
     fn from(divisor: usize) -> Self {
         assert_ne!(divisor, 0);
         let state = vec![vec![vec![Edge::default(); 10]; 10]; 10];
-        Self {
-            divisor,
-            state,
-        }
+        Self { divisor, state }
     }
 }
 
@@ -120,15 +105,11 @@ impl Default for LeadingZero {
         // k is between 1 and 20 (inclusive), so there are at most 21 distinct remainders
         let yes = vec![None; 21];
         let no = vec![None; 21];
-        Self {
-            yes,
-            no,
-        }
+        Self { yes, no }
     }
 }
 
 impl Solver {
-
     /// Calculate the number of beautiful numbers between 0 and `digits`
     ///
     /// Parameters:
@@ -139,14 +120,16 @@ impl Solver {
     /// - index - the next index into `digits` to examine
     /// - leading_zero - true if the string representation of the number has a leading zero
     /// - remainder - the remainder after dividing the number by the divisor
-    fn beautiful_numbers(&mut self,
-                         digits: &[u8],
-                         even_count: usize,
-                         odd_count: usize,
-                         edge: bool,
-                         index: usize,
-                         leading_zero: bool,
-                         remainder: usize) -> usize {
+    fn beautiful_numbers(
+        &mut self,
+        digits: &[u8],
+        even_count: usize,
+        odd_count: usize,
+        edge: bool,
+        index: usize,
+        leading_zero: bool,
+        remainder: usize,
+    ) -> usize {
         if index == digits.len() {
             return if even_count == odd_count && remainder % self.divisor == 0 {
                 1
@@ -157,7 +140,8 @@ impl Solver {
 
         if let Some(count) = &self.state[index][even_count][odd_count]
             .leading_zero(edge)
-            .remainders(leading_zero)[remainder] {
+            .remainders(leading_zero)[remainder]
+        {
             return *count;
         }
 
@@ -168,95 +152,112 @@ impl Solver {
                 let remainder = (digit * 10usize.pow((digits.len() - index - 1) as u32)
                     + remainder)
                     % self.divisor;
-                result +=
-                    self.beautiful_numbers_for_digit(digits,
-                                                     even_count,
-                                                     odd_count,
-                                                     index,
-                                                     leading_zero,
-                                                     digit,
-                                                     remainder);
+                result += self.beautiful_numbers_for_digit(
+                    digits,
+                    even_count,
+                    odd_count,
+                    index,
+                    leading_zero,
+                    digit,
+                    remainder,
+                );
             }
-            let remainder =
-                ((digit * 10usize.pow((digits.len() - index - 1) as u32))
-                        + remainder)
-                    % self.divisor;
+            let remainder = ((digit * 10usize.pow((digits.len() - index - 1) as u32)) + remainder)
+                % self.divisor;
             result += if digit % 2 == 0 {
-                self.beautiful_numbers(digits,
-                                       even_count + 1,
-                                       odd_count,
-                                       true,
-                                       index + 1,
-                                       false,
-                                       remainder)
+                self.beautiful_numbers(
+                    digits,
+                    even_count + 1,
+                    odd_count,
+                    true,
+                    index + 1,
+                    false,
+                    remainder,
+                )
             } else {
-                self.beautiful_numbers(digits,
-                                       even_count,
-                                       odd_count + 1,
-                                       true,
-                                       index + 1,
-                                       false,
-                                       remainder)
+                self.beautiful_numbers(
+                    digits,
+                    even_count,
+                    odd_count + 1,
+                    true,
+                    index + 1,
+                    false,
+                    remainder,
+                )
             };
         } else {
             for digit in 0..=9usize {
-                let remainder =
-                    ((digit * 10usize.pow((digits.len() - index - 1) as u32))
-                            + remainder)
-                        % self.divisor;
-                result +=
-                    self.beautiful_numbers_for_digit(digits,
-                                                     even_count,
-                                                     odd_count,
-                                                     index,
-                                                     leading_zero,
-                                                     digit,
-                                                     remainder);
+                let remainder = ((digit * 10usize.pow((digits.len() - index - 1) as u32))
+                    + remainder)
+                    % self.divisor;
+                result += self.beautiful_numbers_for_digit(
+                    digits,
+                    even_count,
+                    odd_count,
+                    index,
+                    leading_zero,
+                    digit,
+                    remainder,
+                );
             }
         }
-        *self.state.get_mut(index).unwrap()
-            .get_mut(even_count).unwrap()
-            .get_mut(odd_count).unwrap()
+        *self
+            .state
+            .get_mut(index)
+            .unwrap()
+            .get_mut(even_count)
+            .unwrap()
+            .get_mut(odd_count)
+            .unwrap()
             .leading_zero(edge)
             .remainders(leading_zero)
-            .get_mut(remainder).unwrap() = Some(result);
+            .get_mut(remainder)
+            .unwrap() = Some(result);
         result
     }
 
-    fn beautiful_numbers_for_digit(&mut self,
-                                   digits: &[u8],
-                                   even_count: usize,
-                                   odd_count: usize,
-                                   index: usize,
-                                   leading_zero: bool,
-                                   digit: usize,
-                                   remainder: usize) -> usize {
+    fn beautiful_numbers_for_digit(
+        &mut self,
+        digits: &[u8],
+        even_count: usize,
+        odd_count: usize,
+        index: usize,
+        leading_zero: bool,
+        digit: usize,
+        remainder: usize,
+    ) -> usize {
         if digit % 2 == 0 {
             if leading_zero && digit == 0 {
-                self.beautiful_numbers(digits,
-                                       even_count,
-                                       odd_count,
-                                       false,
-                                       index + 1,
-                                       true,
-                                       remainder)
+                self.beautiful_numbers(
+                    digits,
+                    even_count,
+                    odd_count,
+                    false,
+                    index + 1,
+                    true,
+                    remainder,
+                )
             } else {
-                self.beautiful_numbers(digits,
-                                       even_count + 1,
-                                       odd_count,
-                                       false,
-                                       index + 1,
-                                       false,
-                                       remainder)
+                self.beautiful_numbers(
+                    digits,
+                    even_count + 1,
+                    odd_count,
+                    false,
+                    index + 1,
+                    false,
+                    remainder,
+                )
             }
         } else {
-            self.beautiful_numbers(digits,
-                                   even_count,
-                                   odd_count + 1,
-                                   false,
-                                   index + 1,
-                                   false,
-                                   remainder)
+            self.beautiful_numbers(
+                digits,
+                even_count,
+                odd_count + 1,
+                false,
+                index + 1,
+                false,
+                remainder,
+            )
         }
     }
 }

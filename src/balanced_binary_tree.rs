@@ -27,7 +27,8 @@ impl TreeNode {
         if len == 0 {
             return None;
         }
-        let mut owned_nodes = array.iter()
+        let mut owned_nodes = array
+            .iter()
             .map(|value| value.map(|value| Rc::new(RefCell::new(TreeNode::new(value)))))
             .collect::<Vec<Option<Rc<RefCell<TreeNode>>>>>();
         eprintln!("owned_nodes: {:?}", owned_nodes);
@@ -52,10 +53,9 @@ impl TreeNode {
 
         for parent_index in has_left_child {
             let child_index = parent_index * 2 + 1;
-            let child = owned_nodes.get(child_index)
-                .unwrap()
-                .clone();
-            let mut parent = owned_nodes.get_mut(parent_index)
+            let child = owned_nodes.get(child_index).unwrap().clone();
+            let mut parent = owned_nodes
+                .get_mut(parent_index)
                 .unwrap()
                 .as_mut()
                 .unwrap()
@@ -64,10 +64,9 @@ impl TreeNode {
         }
         for parent_index in has_right_child {
             let child_index = parent_index * 2 + 2;
-            let child = owned_nodes.get(child_index)
-                .unwrap()
-                .clone();
-            let mut parent = owned_nodes.get_mut(parent_index)
+            let child = owned_nodes.get(child_index).unwrap().clone();
+            let mut parent = owned_nodes
+                .get_mut(parent_index)
                 .unwrap()
                 .as_mut()
                 .unwrap()
@@ -77,7 +76,6 @@ impl TreeNode {
 
         owned_nodes[0].clone()
     }
-
 }
 
 use std::cell::RefCell;
@@ -100,7 +98,7 @@ fn inspect(tree: &Option<Rc<RefCell<TreeNode>>>, depth: usize) -> (bool, usize) 
         let (right_balanced, right_depth) = inspect(&tree.borrow().right, depth + 1);
         (
             left_balanced && right_balanced && abs_diff(left_depth, right_depth) <= 1,
-            left_depth.max(right_depth)
+            left_depth.max(right_depth),
         )
     } else {
         (true, depth)
@@ -117,8 +115,8 @@ fn abs_diff(x: usize, y: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::TreeNode;
     use super::Solution;
+    use super::TreeNode;
 
     #[test]
     pub fn example1() {
@@ -135,7 +133,17 @@ mod tests {
     #[test]
     pub fn example2() {
         // given
-        let root = TreeNode::parse(&[Some(1), Some(2), Some(2), Some(3), Some(3), None, None, Some(4), Some(4)]);
+        let root = TreeNode::parse(&[
+            Some(1),
+            Some(2),
+            Some(2),
+            Some(3),
+            Some(3),
+            None,
+            None,
+            Some(4),
+            Some(4),
+        ]);
         eprintln!("root: {:?}", root);
 
         // when

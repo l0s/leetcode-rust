@@ -23,7 +23,7 @@ impl Solution {
         for color in nums.iter_mut().skip(reds).take(whites) {
             *color = 1;
         }
-        for color in nums.iter_mut().skip(reds + whites).take(blues)  {
+        for color in nums.iter_mut().skip(reds + whites).take(blues) {
             *color = 2;
         }
     }
@@ -36,7 +36,7 @@ mod tests {
     #[test]
     pub fn example1() {
         // given
-        let mut nums = vec![2,0,2,1,1,0];
+        let mut nums = vec![2, 0, 2, 1, 1, 0];
 
         // when
         Solution::sort_colors(&mut nums);
@@ -48,7 +48,7 @@ mod tests {
     #[test]
     pub fn example2() {
         // given
-        let mut nums = vec![2,0,1];
+        let mut nums = vec![2, 0, 1];
 
         // when
         Solution::sort_colors(&mut nums);

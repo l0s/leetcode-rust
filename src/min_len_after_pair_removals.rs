@@ -8,7 +8,7 @@ impl Solution {
     /// Parameters:
     /// - `nums` - sorted in non-decreasing order, may have duplicates, of length between 1 and 10^5
     pub fn min_length_after_removals(nums: Vec<i32>) -> i32 {
-        for length in (1..=nums.len()/2).rev() {
+        for length in (1..=nums.len() / 2).rev() {
             let smallest = &nums[0..length];
             let largest = &nums[nums.len() - length..nums.len()];
             let mut valid = true;
@@ -33,7 +33,7 @@ mod tests {
     #[test]
     pub fn example1() {
         // given
-        let nums = vec![1,3,4,9];
+        let nums = vec![1, 3, 4, 9];
 
         // when
         let result = Solution::min_length_after_removals(nums);
@@ -45,7 +45,7 @@ mod tests {
     #[test]
     pub fn example2() {
         // given
-        let nums = vec![2,3,6,9];
+        let nums = vec![2, 3, 6, 9];
 
         // when
         let result = Solution::min_length_after_removals(nums);
@@ -57,7 +57,7 @@ mod tests {
     #[test]
     pub fn example3() {
         // given
-        let nums = vec![1,1,2];
+        let nums = vec![1, 1, 2];
 
         // when
         let result = Solution::min_length_after_removals(nums);
@@ -69,7 +69,7 @@ mod tests {
     #[test]
     pub fn example348() {
         // given
-        let nums = vec![1,3,3,3,4];
+        let nums = vec![1, 3, 3, 3, 4];
 
         // when
         let result = Solution::min_length_after_removals(nums);

@@ -26,7 +26,7 @@ impl Solution {
 
 pub struct GameState<'s> {
     stones: &'s [i32],
-    prefix_sums: &'s[u32],
+    prefix_sums: &'s [u32],
     start_inclusive: usize,
     end_exclusive: usize,
 }
@@ -54,7 +54,6 @@ pub struct Key {
 }
 
 impl<'s> GameState<'s> {
-
     /// the number of stones
     pub fn len(&self) -> usize {
         self.end_exclusive - self.start_inclusive
@@ -103,12 +102,13 @@ impl<'s> GameState<'s> {
 }
 
 impl Score {
-
     /// The absolute difference in scores, regardless of who won
     pub fn diff(&self) -> i32 {
         let result = if self.alice > self.bob {
             self.alice - self.bob
-        } else /* self.alice <= self.bob */ {
+        } else
+        /* self.alice <= self.bob */
+        {
             self.bob - self.alice
         };
         result as i32
@@ -137,7 +137,6 @@ impl Score {
 }
 
 impl Player {
-
     /// Given a game's current state, identify the best possible outcome for this player.
     ///
     /// Parameters:
@@ -225,7 +224,10 @@ mod tests {
     #[test]
     pub fn example9() {
         // given
-        let stones = vec![721, 979, 690, 84, 742, 873, 31, 323, 819, 22, 928, 866, 118, 843, 169, 818, 908, 832, 852, 480, 763, 715, 875, 629];
+        let stones = vec![
+            721, 979, 690, 84, 742, 873, 31, 323, 819, 22, 928, 866, 118, 843, 169, 818, 908, 832,
+            852, 480, 763, 715, 875, 629,
+        ];
 
         // when
         let result = Solution::stone_game_vii(stones);

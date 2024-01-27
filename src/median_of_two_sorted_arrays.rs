@@ -55,26 +55,36 @@ mod tests {
     #[test]
     pub fn example1() {
         // given
-        let nums1 = vec![1,3];
+        let nums1 = vec![1, 3];
         let nums2 = vec![2];
 
         // when
         let result = Solution::find_median_sorted_arrays(nums1, nums2);
 
         // then
-        assert!((result - 2f64).abs() < 0.000001, "Expected {}, but got {}", 2f64, result);
+        assert!(
+            (result - 2f64).abs() < 0.000001,
+            "Expected {}, but got {}",
+            2f64,
+            result
+        );
     }
 
     #[test]
     pub fn example2() {
         // given
-        let nums1 = vec![1,2];
-        let nums2 = vec![3,4];
+        let nums1 = vec![1, 2];
+        let nums2 = vec![3, 4];
 
         // when
         let result = Solution::find_median_sorted_arrays(nums1, nums2);
 
         // then
-        assert!((result - 2.5f64).abs() < 0.000001, "Expected {}, but got {}", 2.5f64, result);
+        assert!(
+            (result - 2.5f64).abs() < 0.000001,
+            "Expected {}, but got {}",
+            2.5f64,
+            result
+        );
     }
 }

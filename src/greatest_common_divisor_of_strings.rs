@@ -24,7 +24,8 @@ impl Solution {
                 continue;
             }
             if vec![candidate_divisor; str1.len() / gcd_length].concat() == str1
-                && vec![candidate_divisor; str2.len() / gcd_length].concat() == str2 {
+                && vec![candidate_divisor; str2.len() / gcd_length].concat() == str2
+            {
                 return candidate_divisor.to_string();
             } // else not a divisor to at least one of the strings
         }
