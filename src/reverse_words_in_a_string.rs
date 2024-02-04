@@ -6,8 +6,7 @@ pub struct Solution;
 impl Solution {
     pub fn reverse_words(s: String) -> String {
         let mut stack = vec![];
-        s.split_whitespace()
-            .for_each(|word| stack.insert(0, word));
+        s.split_whitespace().for_each(|word| stack.insert(0, word));
         stack.join(" ")
     }
 }

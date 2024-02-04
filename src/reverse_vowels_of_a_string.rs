@@ -8,8 +8,10 @@ const VOWELS: [char; 10] = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
 impl Solution {
     pub fn reverse_vowels(s: String) -> String {
         let chars = s.chars().collect::<Vec<char>>();
-        let vowel_indices = chars.iter().enumerate().
-            filter(|(_, character)| VOWELS.contains(character))
+        let vowel_indices = chars
+            .iter()
+            .enumerate()
+            .filter(|(_, character)| VOWELS.contains(character))
             .map(|(index, _)| index)
             .collect::<Vec<usize>>();
         let mut result = chars.clone();
