@@ -13,6 +13,7 @@ pub mod find_minimum_time_to_finish_all_jobs;
 pub mod first_last_position_of_element;
 pub mod greatest_common_divisor_of_strings;
 pub mod increasing_triplet_subsequence;
+pub mod is_subsequence;
 pub mod kids_with_greatest_number_of_candies;
 pub mod largest_element_after_merge_operations;
 pub mod letter_combinations_phone_number;
