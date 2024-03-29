@@ -23,6 +23,7 @@ pub mod median_of_two_sorted_arrays;
 pub mod merge_strings_alternately;
 pub mod min_len_after_pair_removals;
 pub mod min_sum_k_avoiding_array;
+pub mod move_zeroes;
 pub mod partition_array_into_disjoint_intervals;
 pub mod partition_equal_subset_sum;
 pub mod pascals_triangle;
