@@ -6,6 +6,7 @@ pub mod best_time_to_buy_and_sell_stock;
 pub mod buddy_strings;
 pub mod can_place_flowers;
 pub mod car_pooling;
+pub mod container_with_most_water;
 pub mod count_number_of_teams;
 pub mod determine_if_cell_is_reachable_at_time;
 pub mod distinct_subsequences_ii;
