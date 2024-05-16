@@ -22,6 +22,7 @@ pub mod lfu_cache;
 pub mod max_avg_subarray_i;
 pub mod max_depth_of_binary_tree;
 pub mod max_number_k_sum_pairs;
+pub mod max_vowels_substring;
 pub mod maximize_grid_happiness;
 pub mod median_of_two_sorted_arrays;
 pub mod merge_strings_alternately;
