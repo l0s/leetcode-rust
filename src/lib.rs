@@ -48,3 +48,4 @@ pub mod stone_game_vii;
 pub mod string_compression;
 pub mod time_based_key_value_store;
 pub mod two_sum_ii;
+pub mod unique_number_of_occurrences;
