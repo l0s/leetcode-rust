@@ -17,6 +17,7 @@ pub mod find_pivot_index;
 pub mod first_last_position_of_element;
 pub mod greatest_common_divisor_of_strings;
 pub mod increasing_triplet_subsequence;
+pub mod insert_interval;
 pub mod is_subsequence;
 pub mod kids_with_greatest_number_of_candies;
 pub mod largest_element_after_merge_operations;
