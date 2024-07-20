@@ -444,7 +444,7 @@ impl Grid {
 
     pub fn mutate(&mut self, random: &mut Rand) {
         // pick a random mutation
-        let mutations = vec![
+        let mutations = [
             Mutation::AddIntrovert,
             Mutation::AddExtrovert,
             Mutation::Swap,
@@ -457,7 +457,6 @@ impl Grid {
             .collect::<Vec<&Mutation>>();
         random.shuffle(&mut mutations);
         let mutation = mutations[0];
-        // eprintln!("-- Applying mutation: {:?}", mutation);
 
         mutation.execute(self, random);
     }

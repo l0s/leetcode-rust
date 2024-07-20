@@ -87,7 +87,7 @@ impl Ord for Trip {
 
 impl PartialOrd for Trip {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.from.partial_cmp(&other.from)
+        Some(self.from.cmp(&other.from))
     }
 }
 

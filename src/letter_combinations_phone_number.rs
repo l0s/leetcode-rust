@@ -40,7 +40,7 @@ fn combinations(digits: &[char]) -> Vec<Vec<char>> {
     let mut result = Vec::with_capacity(prefixes.len() * suffixes.len());
     for prefix in prefixes {
         for suffix in &suffixes {
-            result.push(vec![vec![*prefix], suffix.clone()].concat());
+            result.push([vec![*prefix], suffix.clone()].concat());
         }
     }
 

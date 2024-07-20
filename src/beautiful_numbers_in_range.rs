@@ -8,13 +8,13 @@ impl Solution {
         let low = low - 1;
 
         let mut solver = Solver::from(k as usize);
-        let upper_count = solver.beautiful_numbers(&extract_digits(high), 0, 0, true, 0, true, 0);
+        let upper_count = solver.beautiful_numbers(&extract_digits(high), Counts::default(), true, 0, true, 0);
 
         let lower_count = if low == 0 {
             1
         } else {
             let mut solver = Solver::from(k as usize);
-            solver.beautiful_numbers(&extract_digits(low), 0, 0, true, 0, true, 0)
+            solver.beautiful_numbers(&extract_digits(low), Counts::default(), true, 0, true, 0)
         };
 
         (upper_count - lower_count) as i32
@@ -109,36 +109,58 @@ impl Default for LeadingZero {
     }
 }
 
+#[derive(Default, Clone, Copy)]
+struct Counts {
+    /// the number of even digits counted so far
+    even: usize,
+    /// the number of odd digits counted so far
+    odd: usize,
+}
+
+impl Counts {
+    pub fn increment_evens(&self) -> Self {
+        Self {
+            even: self.even + 1,
+            odd: self.odd,
+        }
+    }
+
+    pub fn increment_odds(&self) -> Self {
+        Self {
+            even: self.even,
+            odd: self.odd + 1,
+        }
+    }
+}
+
 impl Solver {
     /// Calculate the number of beautiful numbers between 0 and `digits`
     ///
     /// Parameters:
     /// - digits - the upper bound, represented as individual base 10 digits, cannot exceed 10^9
-    /// - even_count - the number of even digits counted so far
-    /// - odd_count - the number of odd digits counted so far
-    /// - edge - true if the the number under consideration is the upper boundary
+    /// - counts - the numbers of even and odd digits counted so far
+    /// - edge - true if the number under consideration is the upper boundary
     /// - index - the next index into `digits` to examine
     /// - leading_zero - true if the string representation of the number has a leading zero
     /// - remainder - the remainder after dividing the number by the divisor
     fn beautiful_numbers(
         &mut self,
         digits: &[u8],
-        even_count: usize,
-        odd_count: usize,
+        counts: Counts,
         edge: bool,
         index: usize,
         leading_zero: bool,
         remainder: usize,
     ) -> usize {
         if index == digits.len() {
-            return if even_count == odd_count && remainder % self.divisor == 0 {
+            return if counts.even == counts.odd && remainder % self.divisor == 0 {
                 1
             } else {
                 0
             };
         }
 
-        if let Some(count) = &self.state[index][even_count][odd_count]
+        if let Some(count) = &self.state[index][counts.even][counts.odd]
             .leading_zero(edge)
             .remainders(leading_zero)[remainder]
         {
@@ -154,8 +176,7 @@ impl Solver {
                     % self.divisor;
                 result += self.beautiful_numbers_for_digit(
                     digits,
-                    even_count,
-                    odd_count,
+                    counts,
                     index,
                     leading_zero,
                     digit,
@@ -167,8 +188,7 @@ impl Solver {
             result += if digit % 2 == 0 {
                 self.beautiful_numbers(
                     digits,
-                    even_count + 1,
-                    odd_count,
+                    counts.increment_evens(),
                     true,
                     index + 1,
                     false,
@@ -177,8 +197,7 @@ impl Solver {
             } else {
                 self.beautiful_numbers(
                     digits,
-                    even_count,
-                    odd_count + 1,
+                    counts.increment_odds(),
                     true,
                     index + 1,
                     false,
@@ -192,8 +211,7 @@ impl Solver {
                     % self.divisor;
                 result += self.beautiful_numbers_for_digit(
                     digits,
-                    even_count,
-                    odd_count,
+                    counts,
                     index,
                     leading_zero,
                     digit,
@@ -205,9 +223,9 @@ impl Solver {
             .state
             .get_mut(index)
             .unwrap()
-            .get_mut(even_count)
+            .get_mut(counts.even)
             .unwrap()
-            .get_mut(odd_count)
+            .get_mut(counts.odd)
             .unwrap()
             .leading_zero(edge)
             .remainders(leading_zero)
@@ -219,8 +237,7 @@ impl Solver {
     fn beautiful_numbers_for_digit(
         &mut self,
         digits: &[u8],
-        even_count: usize,
-        odd_count: usize,
+        counts: Counts,
         index: usize,
         leading_zero: bool,
         digit: usize,
@@ -230,8 +247,7 @@ impl Solver {
             if leading_zero && digit == 0 {
                 self.beautiful_numbers(
                     digits,
-                    even_count,
-                    odd_count,
+                    counts,
                     false,
                     index + 1,
                     true,
@@ -240,8 +256,7 @@ impl Solver {
             } else {
                 self.beautiful_numbers(
                     digits,
-                    even_count + 1,
-                    odd_count,
+                    counts.increment_evens(),
                     false,
                     index + 1,
                     false,
@@ -251,8 +266,7 @@ impl Solver {
         } else {
             self.beautiful_numbers(
                 digits,
-                even_count,
-                odd_count + 1,
+                counts.increment_odds(),
                 false,
                 index + 1,
                 false,

@@ -7,7 +7,7 @@ impl Solution {
     pub fn minimum_sum(n: i32, k: i32) -> i32 {
         let mut result = 0;
         let mut len = 0;
-        let mut can_insert = vec![true; 51];
+        let mut can_insert = [true; 51];
 
         let mut candidate = 1i32;
         while len < n {
