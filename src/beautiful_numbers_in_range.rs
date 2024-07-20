@@ -8,7 +8,8 @@ impl Solution {
         let low = low - 1;
 
         let mut solver = Solver::from(k as usize);
-        let upper_count = solver.beautiful_numbers(&extract_digits(high), Counts::default(), true, 0, true, 0);
+        let upper_count =
+            solver.beautiful_numbers(&extract_digits(high), Counts::default(), true, 0, true, 0);
 
         let lower_count = if low == 0 {
             1
@@ -245,14 +246,7 @@ impl Solver {
     ) -> usize {
         if digit % 2 == 0 {
             if leading_zero && digit == 0 {
-                self.beautiful_numbers(
-                    digits,
-                    counts,
-                    false,
-                    index + 1,
-                    true,
-                    remainder,
-                )
+                self.beautiful_numbers(digits, counts, false, index + 1, true, remainder)
             } else {
                 self.beautiful_numbers(
                     digits,
