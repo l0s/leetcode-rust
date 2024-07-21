@@ -12,6 +12,7 @@ pub mod count_number_of_teams;
 pub mod determine_if_cell_is_reachable_at_time;
 pub mod difference_of_two_arrays;
 pub mod distinct_subsequences_ii;
+pub mod evaluate_reverse_polish_notation;
 pub mod find_highest_altitude;
 pub mod find_minimum_time_to_finish_all_jobs;
 pub mod find_pivot_index;
