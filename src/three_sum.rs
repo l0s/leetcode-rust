@@ -29,6 +29,13 @@ impl Solution {
         }
         let compressed_length = nums.len();
 
+        let mut index_map: HashMap<i32, Vec<usize>> = HashMap::with_capacity(compressed_length);
+        for (index, value) in nums.iter().enumerate() {
+            index_map.entry(*value)
+                .and_modify(|bucket| bucket.push(index))
+                .or_insert(vec![index]);
+        }
+
         // items sorted by value then index in ascending order
         let items = nums
             .into_iter()
@@ -68,22 +75,15 @@ impl Solution {
                     // an equivalent triplet was already recorded
                     continue;
                 }
-                let lower_bound = Item {
-                    index: 0,
-                    value: third_value,
-                };
-                let upper_bound = Item {
-                    index: compressed_length - 1,
-                    value: third_value,
-                };
-                if items
-                    .range((Included(&lower_bound), Included(&upper_bound)))
-                    .any(|third_item| {
-                        third_item.index != first_item.index
-                            && third_item.index != second_item.index
-                    })
-                {
-                    triplets.insert(potential_triplet);
+                if let Some(third_indices) = index_map.get(&third_value) {
+                    let mut bucket = third_indices.iter()
+                        .cloned()
+                        .collect::<HashSet<usize>>();
+                    bucket.remove(&first_item.index);
+                    bucket.remove(&second_item.index);
+                    if !bucket.is_empty() {
+                        triplets.insert(potential_triplet);
+                    }
                 }
             }
         }
