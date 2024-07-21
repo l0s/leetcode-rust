@@ -31,7 +31,8 @@ impl Solution {
 
         let mut index_map: HashMap<i32, Vec<usize>> = HashMap::with_capacity(compressed_length);
         for (index, value) in nums.iter().enumerate() {
-            index_map.entry(*value)
+            index_map
+                .entry(*value)
                 .and_modify(|bucket| bucket.push(index))
                 .or_insert(vec![index]);
         }
@@ -76,9 +77,7 @@ impl Solution {
                     continue;
                 }
                 if let Some(third_indices) = index_map.get(&third_value) {
-                    let mut bucket = third_indices.iter()
-                        .cloned()
-                        .collect::<HashSet<usize>>();
+                    let mut bucket = third_indices.iter().cloned().collect::<HashSet<usize>>();
                     bucket.remove(&first_item.index);
                     bucket.remove(&second_item.index);
                     if !bucket.is_empty() {

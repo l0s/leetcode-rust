@@ -3,6 +3,7 @@ pub mod average_of_levels_in_binary_tree;
 pub mod balanced_binary_tree;
 pub mod beautiful_numbers_in_range;
 pub mod best_time_to_buy_and_sell_stock;
+pub mod binary_tree_level_order_traversal;
 pub mod buddy_strings;
 pub mod can_place_flowers;
 pub mod car_pooling;
