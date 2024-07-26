@@ -3,66 +3,86 @@
 
 pub struct Solution;
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
+use DfsState::{Unvisited, Visited, Visiting};
 
 impl Solution {
     pub fn can_finish(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> bool {
         if prerequisites.is_empty() {
             return true;
         }
-        let mut courses = HashMap::with_capacity(num_courses as usize);
-        (0i32..num_courses)
+
+        // "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`"
+        let num_courses = num_courses as usize;
+        let mut courses = HashMap::with_capacity(num_courses);
+        let mut dfs_states = HashMap::with_capacity(num_courses);
+        (0..num_courses)
             .map(|course_id| course_id.into())
             .for_each(|course: Course| {
+                dfs_states.insert(course.id, Unvisited);
                 courses.insert(course.id, course);
             });
-        let num_courses = num_courses as usize;
+
         for prerequisite in &prerequisites {
-            let course_id = prerequisite[0];
-            let dependency_id = prerequisite[1];
+            let course_id = prerequisite[0] as usize;
+            let dependency_id = prerequisite[1] as usize;
             courses
                 .entry(course_id)
-                .and_modify(|course| course.dependencies.push(dependency_id))
-                .or_insert(Course {
-                    id: course_id,
-                    dependencies: vec![dependency_id],
-                });
+                .and_modify(|course| course.dependencies.push(dependency_id));
         }
 
-        // find cycles using DFS
-        for root in prerequisites
-            .iter()
-            .map(|tuple| courses.get(&tuple[0]).expect("Missing course"))
-        {
-            let mut visited = HashSet::with_capacity(num_courses);
+        for root in courses.values() {
+            if dfs_states[&root.id] != Unvisited {
+                // only consider unvisited nodes
+                continue;
+            }
+
+            // find cycle using DFS
             let mut stack = VecDeque::with_capacity(num_courses);
-            stack.push_back(root);
-            while let Some(node) = stack.pop_back() {
-                visited.insert(node.id);
-                for dependency_id in &node.dependencies {
-                    if *dependency_id == root.id {
-                        // cycle detected
-                        return false;
+            stack.push_back(root.id);
+            while let Some(course_id) = stack.back() {
+                if dfs_states[course_id] == Unvisited {
+                    // exploring paths through node
+                    dfs_states.insert(*course_id, Visiting);
+                    let course = courses.get(course_id).expect("Missing course");
+                    for dependency_id in &course.dependencies {
+                        if dfs_states[dependency_id] == Visiting {
+                            // cycle detected
+                            return false;
+                        }
+                        if dfs_states[dependency_id] == Unvisited {
+                            stack.push_back(*dependency_id);
+                        }
                     }
-                    if !visited.contains(dependency_id) {
-                        let dependency = courses.get(dependency_id).expect("Missing course");
-                        stack.push_back(dependency);
-                    }
+                } else if dfs_states[course_id] == Visiting {
+                    // returning back through node
+                    dfs_states.insert(*course_id, Visited);
+                    stack.pop_back();
+                } else if dfs_states[course_id] == Visited {
+                    stack.pop_back();
                 }
             }
         }
 
+        // no cycles found
         true
     }
 }
 
-struct Course {
-    id: i32,
-    dependencies: Vec<i32>,
+#[derive(Eq, PartialEq)]
+enum DfsState {
+    Unvisited,
+    Visiting,
+    Visited,
 }
 
-impl From<i32> for Course {
-    fn from(value: i32) -> Self {
+struct Course {
+    id: usize,
+    dependencies: Vec<usize>,
+}
+
+impl From<usize> for Course {
+    fn from(value: usize) -> Self {
         Self {
             id: value,
             dependencies: vec![],
