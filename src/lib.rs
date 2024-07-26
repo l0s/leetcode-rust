@@ -9,6 +9,7 @@ pub mod can_place_flowers;
 pub mod car_pooling;
 pub mod container_with_most_water;
 pub mod count_number_of_teams;
+pub mod course_schedule;
 pub mod determine_if_cell_is_reachable_at_time;
 pub mod difference_of_two_arrays;
 pub mod distinct_subsequences_ii;
