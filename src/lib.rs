@@ -41,6 +41,7 @@ pub mod maximize_grid_happiness;
 pub mod median_of_two_sorted_arrays;
 pub mod merge_strings_alternately;
 pub mod min_len_after_pair_removals;
+pub mod min_stack;
 pub mod min_sum_k_avoiding_array;
 pub mod move_zeroes;
 pub mod one_matrix;
