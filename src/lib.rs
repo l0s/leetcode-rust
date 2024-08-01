@@ -44,6 +44,7 @@ pub mod min_len_after_pair_removals;
 pub mod min_stack;
 pub mod min_sum_k_avoiding_array;
 pub mod move_zeroes;
+pub mod number_of_islands;
 pub mod one_matrix;
 pub mod partition_array_into_disjoint_intervals;
 pub mod partition_equal_subset_sum;
