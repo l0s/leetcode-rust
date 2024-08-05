@@ -25,7 +25,7 @@ impl Solution {
     /// Find the pivot point in O( lg n ) time
     /// Params:
     /// - `nums` - a slice of distinct integers that are sorted and possibly rotated
-    /// Returns: a value "pivot" such that `nums[..pivot]` and `nums[pivot..]` are each sorted
+    ///     Returns: a value "pivot" such that `nums[..pivot]` and `nums[pivot..]` are each sorted
     fn pivot(nums: &[i32]) -> usize {
         if nums.len() == 1 {
             return 0;
