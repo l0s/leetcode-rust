@@ -51,6 +51,7 @@ pub mod one_matrix;
 pub mod partition_array_into_disjoint_intervals;
 pub mod partition_equal_subset_sum;
 pub mod pascals_triangle;
+mod permutations;
 pub mod product_of_array_except_self;
 pub mod reveal_cards_in_increasing_order;
 pub mod reverse_vowels_of_a_string;
