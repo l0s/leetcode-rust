@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn example118() {
         // given
-        let intervals = [[1,4],[2,3]];
+        let intervals = [[1, 4], [2, 3]];
 
         // when
         let result = Solution::merge(intervals.map(|interval| interval.to_vec()).to_vec());

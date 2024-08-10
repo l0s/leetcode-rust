@@ -32,6 +32,7 @@ pub mod letter_combinations_phone_number;
 pub mod lfu_cache;
 pub mod longest_subarray_of_ones_after_deleting_one_element;
 pub mod longest_substring_without_repeating_characters;
+mod lowest_common_ancestor_binary_tree;
 pub mod matrix_util;
 pub mod max_avg_subarray_i;
 pub mod max_consecutive_ones_iii;
