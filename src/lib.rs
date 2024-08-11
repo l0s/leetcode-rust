@@ -1,3 +1,4 @@
+mod accounts_merge;
 pub mod advantage_shuffle;
 pub mod average_of_levels_in_binary_tree;
 pub mod balanced_binary_tree;
