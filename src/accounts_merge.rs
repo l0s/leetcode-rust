@@ -4,9 +4,8 @@
 pub struct Solution;
 
 use std::cell::RefCell;
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 use std::hash::{Hash, Hasher};
-use std::ops::Deref;
 use std::rc::Rc;
 
 impl Solution {
@@ -14,48 +13,71 @@ impl Solution {
         let accounts = accounts
             .into_iter()
             .map(|vec| vec.into())
-            .collect::<Vec<Account>>();
-        let mut map: HashMap<String, Rc<RefCell<Account>>> = HashMap::with_capacity(accounts.len());
-        for account in accounts {
-            #[allow(clippy::mutable_key_type)]
-            let mut duplicate_accounts = account
-                .emails
-                .iter()
-                .filter_map(|email| map.get(email))
-                .cloned()
-                .map(HashedAccount)
-                .collect::<HashSet<HashedAccount>>();
-            duplicate_accounts.insert(HashedAccount(Rc::new(RefCell::new(account))));
-            let mut prioritised_accounts = duplicate_accounts
-                .into_iter()
-                .collect::<Vec<HashedAccount>>();
-            prioritised_accounts
-                .sort_unstable_by_key(|y| std::cmp::Reverse(y.0.borrow().num_emails()));
+            .map(|account| Rc::new(RefCell::new(account)))
+            .collect::<Vec<Rc<RefCell<Account>>>>();
 
-            let primary = &prioritised_accounts[0];
-            for subordinate in &prioritised_accounts[1..] {
-                primary
-                    .0
-                    .borrow_mut()
-                    .absorb(subordinate.0.borrow().deref());
-            }
-            // TODO can we skip updating the emails already pointing to the primary?
-            // TODO do we know if primary is already mapped?
+        // Maintain graph connections between accounts
+        // each key is an edge (email address)
+        // each value is the list of nodes connected by that edge (accounts)
+        let mut edges: HashMap<String, HashSet<HashedAccount>> =
+            HashMap::with_capacity(accounts.len());
 
-            for email in &primary.0.borrow().emails
-            /*.difference(&original_emails)*/
-            {
-                map.insert(email.clone(), primary.0.clone());
+        // DFS to find connected components in the graph
+        let mut stack = VecDeque::with_capacity(accounts.len());
+        for account in &accounts {
+            let reference = account.borrow();
+            for email in &reference.emails {
+                edges.entry(email.clone())
+                    .and_modify(|bucket| {
+                        bucket.insert(HashedAccount(account.clone()));
+                    })
+                    .or_insert_with(|| HashSet::from([HashedAccount(account.clone())]));
             }
+            stack.push_back(account.clone());
         }
 
         #[allow(clippy::mutable_key_type)]
-        map.values()
-            .cloned()
-            .map(HashedAccount)
-            .collect::<HashSet<HashedAccount>>()
-            .into_iter()
-            .map(|account| account.0.borrow().format())
+        let mut visited = HashSet::with_capacity(accounts.len());
+        let mut previous: Option<Rc<RefCell<Account>>> = None;
+        let mut unique_accounts = Vec::with_capacity(accounts.len());
+        while let Some(node) = stack.pop_back() {
+            if visited.contains(&HashedAccount(node.clone())) {
+                continue;
+            }
+
+            if let Some(ref previous_node) = previous {
+                if node == *previous_node {
+                    continue;
+                }
+                if node.borrow().overlaps(&previous_node.borrow()) {
+                    // expand account
+                    previous_node.borrow_mut().absorb(&node.borrow());
+                } else {
+                    // new account
+                    previous = Some(node.clone());
+                    unique_accounts.push(node.clone());
+                }
+            } else {
+                // new account
+                previous = Some(node.clone());
+                unique_accounts.push(node.clone());
+            }
+
+            // find neighbors
+            for email in &node.borrow().emails {
+                for neighbor in edges.get(email).expect("All emails must be mapped") {
+                    if !visited.contains(neighbor) {
+                        stack.push_back(neighbor.0.clone());
+                    }
+                }
+            }
+
+            visited.insert(HashedAccount(node.clone()));
+        }
+
+        unique_accounts
+            .iter()
+            .map(|account| account.borrow().format())
             .collect()
     }
 }
@@ -67,8 +89,8 @@ struct Account {
 }
 
 impl Account {
-    fn num_emails(&self) -> usize {
-        self.emails.len()
+    fn overlaps(&self, other: &Self) -> bool {
+        self.emails.intersection(&other.emails).next().is_some()
     }
 
     fn absorb(&mut self, other: &Self) {
