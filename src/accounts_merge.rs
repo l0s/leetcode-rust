@@ -3,8 +3,10 @@
 
 pub struct Solution;
 
+use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap, HashSet};
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
+use std::ops::Deref;
 use std::rc::Rc;
 
 impl Solution {
@@ -13,47 +15,75 @@ impl Solution {
             .into_iter()
             .map(|vec| vec.into())
             .collect::<Vec<Account>>();
-        let mut map: HashMap<String, Rc<Account>> = HashMap::with_capacity(accounts.len());
+        let mut map: HashMap<String, Rc<RefCell<Account>>> = HashMap::with_capacity(accounts.len());
         for account in accounts {
-            let mut merged = account.clone();
-            for email in &account.emails {
-                if let Some(duplicate) = map.get(email) {
-                    merged = merged.merge(duplicate);
-                }
+            #[allow(clippy::mutable_key_type)]
+            let mut duplicate_accounts = account
+                .emails
+                .iter()
+                .filter_map(|email| map.get(email))
+                .cloned()
+                .map(HashedAccount)
+                .collect::<HashSet<HashedAccount>>();
+            duplicate_accounts.insert(HashedAccount(Rc::new(RefCell::new(account))));
+            let mut prioritised_accounts = duplicate_accounts
+                .into_iter()
+                .collect::<Vec<HashedAccount>>();
+            prioritised_accounts
+                .sort_unstable_by_key(|y| std::cmp::Reverse(y.0.borrow().num_emails()));
+
+            let primary = &prioritised_accounts[0];
+            for subordinate in &prioritised_accounts[1..] {
+                primary
+                    .0
+                    .borrow_mut()
+                    .absorb(subordinate.0.borrow().deref());
             }
-            let merged = Rc::new(merged);
-            for email in &merged.emails {
-                map.insert(email.clone(), merged.clone());
+            // TODO can we skip updating the emails already pointing to the primary?
+            // TODO do we know if primary is already mapped?
+
+            for email in &primary.0.borrow().emails
+            /*.difference(&original_emails)*/
+            {
+                map.insert(email.clone(), primary.0.clone());
             }
         }
 
-        let unique_accounts = map.values().cloned().collect::<HashSet<Rc<Account>>>();
-        unique_accounts
-            .iter()
-            .map(|account| {
-                [
-                    vec![account.name.clone()],
-                    account.emails.iter().cloned().collect::<Vec<String>>(),
-                ]
-                .concat()
-            })
-            .collect::<Vec<Vec<String>>>()
+        #[allow(clippy::mutable_key_type)]
+        map.values()
+            .cloned()
+            .map(HashedAccount)
+            .collect::<HashSet<HashedAccount>>()
+            .into_iter()
+            .map(|account| account.0.borrow().format())
+            .collect()
     }
 }
 
-#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
+#[derive(Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 struct Account {
     name: String,
     emails: BTreeSet<String>,
 }
 
 impl Account {
-    fn merge(&self, other: &Self) -> Self {
+    fn num_emails(&self) -> usize {
+        self.emails.len()
+    }
+
+    fn absorb(&mut self, other: &Self) {
         assert_eq!(self.name, other.name);
-        Self {
-            name: self.name.clone(),
-            emails: self.emails.union(&other.emails).cloned().collect(),
+        for other_email in &other.emails {
+            self.emails.insert(other_email.clone());
         }
+    }
+
+    fn format(&self) -> Vec<String> {
+        [
+            vec![self.name.clone()],
+            self.emails.iter().cloned().collect(),
+        ]
+        .concat()
     }
 }
 
@@ -64,6 +94,15 @@ impl From<Vec<String>> for Account {
             name: value[0].clone(),
             emails: value[1..].iter().cloned().collect(),
         }
+    }
+}
+
+#[derive(Eq, PartialEq, Debug)]
+struct HashedAccount(Rc<RefCell<Account>>);
+
+impl Hash for HashedAccount {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.borrow().hash(state)
     }
 }
 
@@ -136,6 +175,81 @@ mod tests {
             vec!["Kevin", "Kevin0@m.co", "Kevin3@m.co", "Kevin5@m.co"],
             vec!["Fern", "Fern0@m.co", "Fern1@m.co", "Fern5@m.co"],
         ];
+        let expected = expected_accounts(&expected);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn example3() {
+        // given
+        let accounts = [
+            vec!["Alex", "Alex5@m.co", "Alex4@m.co", "Alex0@m.co"],
+            vec!["Ethan", "Ethan3@m.co", "Ethan3@m.co", "Ethan0@m.co"],
+            vec!["Kevin", "Kevin4@m.co", "Kevin2@m.co", "Kevin2@m.co"],
+            vec!["Gabe", "Gabe0@m.co", "Gabe3@m.co", "Gabe2@m.co"],
+            vec!["Gabe", "Gabe3@m.co", "Gabe4@m.co", "Gabe2@m.co"],
+        ];
+        let accounts = accounts
+            .map(|inner| inner.into_iter().map(String::from).collect())
+            .to_vec();
+
+        // when
+        let result = Solution::accounts_merge(accounts);
+        let result = result
+            .into_iter()
+            .map(|inner| inner.into())
+            .collect::<BTreeSet<Account>>();
+
+        // then
+        let expected = vec![
+            vec!["Alex", "Alex5@m.co", "Alex4@m.co", "Alex0@m.co"],
+            vec!["Ethan", "Ethan3@m.co", "Ethan3@m.co", "Ethan0@m.co"],
+            vec!["Kevin", "Kevin4@m.co", "Kevin2@m.co", "Kevin2@m.co"],
+            vec![
+                "Gabe",
+                "Gabe0@m.co",
+                "Gabe3@m.co",
+                "Gabe2@m.co",
+                "Gabe4@m.co",
+            ],
+        ];
+        let expected = expected_accounts(&expected);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn example50() {
+        // given
+        let accounts = [
+            vec!["David", "Avid0@m.co", "David0@m.co", "David1@m.co"],
+            vec!["David", "Gvid3@m.co", "David3@m.co", "David4@m.co"],
+            vec!["David", "David4@m.co", "David5@m.co"],
+            vec!["David", "David2@m.co", "David3@m.co"],
+            vec!["David", "David1@m.co", "David2@m.co"],
+        ];
+        let accounts = accounts
+            .map(|inner| inner.into_iter().map(String::from).collect())
+            .to_vec();
+
+        // when
+        let result = Solution::accounts_merge(accounts);
+        let result = result
+            .into_iter()
+            .map(|inner| inner.into())
+            .collect::<BTreeSet<Account>>();
+
+        // then
+        let expected = vec![vec![
+            "David",
+            "Avid0@m.co",
+            "David0@m.co",
+            "David1@m.co",
+            "Gvid3@m.co",
+            "David3@m.co",
+            "David4@m.co",
+            "David5@m.co",
+            "David2@m.co",
+        ]];
         let expected = expected_accounts(&expected);
         assert_eq!(result, expected);
     }
