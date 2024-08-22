@@ -73,5 +73,6 @@ pub mod time_based_key_value_store;
 pub mod tree_node;
 pub mod two_sum_ii;
 pub mod unique_number_of_occurrences;
+pub mod unique_paths;
 pub mod validate_bst;
 pub mod word_break;
