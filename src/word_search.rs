@@ -189,9 +189,7 @@ mod tests {
     #[test]
     fn example85() {
         // given
-        let board = [
-            ['a'],
-        ];
+        let board = [['a']];
         let board = array_to_vec(&board);
         let word = "a";
 
