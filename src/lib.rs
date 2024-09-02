@@ -70,6 +70,7 @@ pub mod sort_colors;
 pub mod stone_game_vii;
 pub mod string_compression;
 pub mod string_to_integer;
+pub mod task_scheduler;
 pub mod three_sum;
 pub mod time_based_key_value_store;
 pub mod tree_node;
