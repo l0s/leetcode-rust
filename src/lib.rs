@@ -45,6 +45,7 @@ pub mod max_number_k_sum_pairs;
 pub mod max_sub_array;
 pub mod max_vowels_substring;
 pub mod maximize_grid_happiness;
+pub mod maximum_product_subarray;
 pub mod median_of_two_sorted_arrays;
 pub mod merge_intervals;
 pub mod merge_strings_alternately;
