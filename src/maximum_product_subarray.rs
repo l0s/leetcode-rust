@@ -177,5 +177,4 @@ mod tests {
         // then
         assert_eq!(result, [-8, -4, -2, 0, 2, 4, 8].to_vec());
     }
-
 }
