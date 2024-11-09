@@ -76,6 +76,7 @@ pub mod string_to_integer;
 pub mod task_scheduler;
 pub mod three_sum;
 pub mod time_based_key_value_store;
+pub mod top_k_frequent_words;
 pub mod tree_node;
 pub mod two_sum_ii;
 pub mod unique_number_of_occurrences;
