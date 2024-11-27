@@ -34,6 +34,7 @@ pub mod kids_with_greatest_number_of_candies;
 pub mod largest_element_after_merge_operations;
 pub mod letter_combinations_phone_number;
 pub mod lfu_cache;
+pub mod longest_consecutive_sequence;
 pub mod longest_palindromic_substring;
 pub mod longest_subarray_of_ones_after_deleting_one_element;
 pub mod longest_substring_without_repeating_characters;
