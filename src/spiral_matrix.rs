@@ -10,9 +10,7 @@ impl Solution {
         } else if matrix.len() == 1 {
             return matrix[0].clone();
         } else if matrix[0].len() == 1 {
-            return matrix.iter()
-                .map(|singleton| singleton[0])
-                .collect();
+            return matrix.iter().map(|singleton| singleton[0]).collect();
         }
         let mut state = State {
             max_row: matrix.len() - 1,
