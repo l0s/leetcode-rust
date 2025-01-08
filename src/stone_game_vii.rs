@@ -53,7 +53,7 @@ pub struct Key {
     player: u8,
 }
 
-impl<'s> GameState<'s> {
+impl GameState<'_> {
     /// the number of stones
     pub fn len(&self) -> usize {
         self.end_exclusive - self.start_inclusive

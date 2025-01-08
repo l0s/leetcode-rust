@@ -23,7 +23,7 @@ impl Solution {
                 graph.remove(&leaf);
             }
         }
-        return graph.neighbors.keys().cloned().collect();
+        graph.neighbors.keys().cloned().collect()
     }
 }
 
