@@ -32,6 +32,7 @@ pub mod insert_interval;
 pub mod is_subsequence;
 pub mod k_closest_points_to_origin;
 pub mod kids_with_greatest_number_of_candies;
+pub mod kth_smallest_element_bst;
 pub mod largest_element_after_merge_operations;
 pub mod letter_combinations_phone_number;
 pub mod lfu_cache;
