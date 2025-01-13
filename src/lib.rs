@@ -27,6 +27,7 @@ pub mod find_minimum_time_to_finish_all_jobs;
 pub mod find_pivot_index;
 pub mod first_last_position_of_element;
 pub mod greatest_common_divisor_of_strings;
+pub mod house_robber;
 pub mod implement_trie;
 pub mod increasing_triplet_subsequence;
 pub mod insert_interval;
