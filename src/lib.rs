@@ -26,6 +26,7 @@ pub mod find_highest_altitude;
 pub mod find_minimum_time_to_finish_all_jobs;
 pub mod find_pivot_index;
 pub mod first_last_position_of_element;
+pub mod gas_station;
 pub mod greatest_common_divisor_of_strings;
 pub mod house_robber;
 pub mod implement_trie;
