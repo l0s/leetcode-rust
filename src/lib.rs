@@ -1,6 +1,7 @@
 pub mod accounts_merge;
 pub mod add_search_words;
 pub mod advantage_shuffle;
+pub mod alien_dictionary;
 pub mod average_of_levels_in_binary_tree;
 pub mod balanced_binary_tree;
 pub mod beautiful_numbers_in_range;
